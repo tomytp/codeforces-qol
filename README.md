@@ -22,3 +22,8 @@ Notes:
 Popup:
 
 - Toggle Focus Mode on/off from the extension popup. Changes apply live on contest pages; reload if needed.
+
+Features:
+
+- Focus Mode: hides standings and solved counts on contest/gym pages.
+- Submit Clipboard in C++: on problem pages, a sidebar button (between “Submit?” and “Last submissions”) reads your clipboard, opens a background submit tab, selects the most recent available C++ version, pastes your code, auto-submits, and then switches to My Submissions.

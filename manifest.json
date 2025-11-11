@@ -19,6 +19,8 @@
   },
   "permissions": [
     "storage",
+    "clipboardRead",
+    "tabs",
     "https://codeforces.com/*",
     "https://*.codeforces.com/*"
   ],
@@ -48,7 +50,11 @@
     {
       "matches": [
         "https://codeforces.com/problemset/submit*",
-        "https://*.codeforces.com/problemset/submit*"
+        "https://*.codeforces.com/problemset/submit*",
+        "https://codeforces.com/contest/*/submit*",
+        "https://*.codeforces.com/contest/*/submit*",
+        "https://codeforces.com/gym/*/submit*",
+        "https://*.codeforces.com/gym/*/submit*"
       ],
       "js": ["src/content/submit.js"],
       "run_at": "document_start"

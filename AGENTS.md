@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository targets a Firefox extension (Codeforces Extended). Keep code under `src/` and static assets in `assets/`.
+This repository is a Firefox WebExtension (Codeforces QoL). Keep source in `src/` and static assets in `assets/`.
 
 Example layout:
 
@@ -49,7 +49,12 @@ If `web-ext` is not installed, add it to devDependencies and wire scripts accord
 
 ## Security & Configuration Tips
 
-- Minimize `manifest.json` permissions; avoid `all_urls` unless essential.
+- Minimize `manifest.json` permissions; avoid `all_urls` unless essential. Current perms: `storage`, `clipboardRead`, `tabs`, and Codeforces host patterns.
 - Bundle all scripts; do not load remote code. Use `chrome.storage.local` for options.
-- Guard content scripts: run only on Codeforces URLs.
-- Manifest uses MV2 with `background.scripts` for compatibility with temporary installs. If migrating to MV3, replace with `background.service_worker` and ensure Firefox MV3 flags are enabled.
+- Guard content scripts: run only on Codeforces URLs; run at `document_start` to prevent UI flashes.
+- Manifest uses MV2 (`background.scripts`) for temporary install compatibility. If migrating to MV3, switch to `background.service_worker` and enable Firefox MV3 flags.
+
+## Current Features (Overview)
+
+- Focus Mode: Hides standings and solved counts on contest/gym pages; includes early CSS pre-hide to avoid flashes; live toggle via popup/options.
+- Submit Clipboard in C++: Sidebar button (between “Submit?” and “Last submissions”) reads clipboard, opens a background submit tab, selects latest C++ (e.g., 23/20/17…), pastes code, auto-submits, then switches to “My submissions.” Includes single-flight lock and throttled observers.
