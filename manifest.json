@@ -1,0 +1,65 @@
+{
+  "manifest_version": 2,
+  "name": "Codeforces Extended",
+  "version": "0.0.1",
+  "description": "Quality-of-life enhancements for Codeforces.",
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "browser_action": {
+    "default_title": "Codeforces Extended",
+    "default_popup": "src/ui/popup.html"
+  },
+  "options_ui": {
+    "page": "src/ui/options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "storage",
+    "https://codeforces.com/*",
+    "https://*.codeforces.com/*"
+  ],
+  "background": {
+    "scripts": ["src/background/background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://codeforces.com/*",
+        "https://*.codeforces.com/*"
+      ],
+      "js": ["src/content/global.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/contest/*",
+        "https://*.codeforces.com/contest/*",
+        "https://codeforces.com/gym/*",
+        "https://*.codeforces.com/gym/*"
+      ],
+      "js": ["src/content/contest.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/problemset/submit*",
+        "https://*.codeforces.com/problemset/submit*"
+      ],
+      "js": ["src/content/submit.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/contest/*/standings*",
+        "https://*.codeforces.com/contest/*/standings*"
+      ],
+      "js": ["src/content/standings.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
