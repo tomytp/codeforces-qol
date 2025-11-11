@@ -1,5 +1,6 @@
 html, body { margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-main { padding: 12px 14px; min-width: 220px; }
+main { padding: 12px 14px; min-width: 240px; }
 h1 { font-size: 14px; margin: 0 0 6px; }
 p { font-size: 12px; margin: 0; }
-
+.row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.hint { color: #555; }

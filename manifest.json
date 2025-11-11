@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Codeforces Extended",
+  "name": "Codeforces QoL",
   "version": "0.0.1",
   "description": "Quality-of-life enhancements for Codeforces.",
   "icons": {
@@ -10,7 +10,7 @@
     "128": "assets/icon-128.png"
   },
   "browser_action": {
-    "default_title": "Codeforces Extended",
+    "default_title": "Codeforces QoL",
     "default_popup": "src/ui/popup.html"
   },
   "options_ui": {
@@ -33,7 +33,7 @@
         "https://*.codeforces.com/*"
       ],
       "js": ["src/content/global.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -43,7 +43,7 @@
         "https://*.codeforces.com/gym/*"
       ],
       "js": ["src/content/contest.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -51,7 +51,7 @@
         "https://*.codeforces.com/problemset/submit*"
       ],
       "js": ["src/content/submit.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -59,7 +59,7 @@
         "https://*.codeforces.com/contest/*/standings*"
       ],
       "js": ["src/content/standings.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ]
 }

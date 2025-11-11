@@ -1,4 +1,4 @@
-# Codeforces Extended
+# Codeforces QoL
 
 Minimal Firefox WebExtension (MV2) skeleton for Codeforces quality-of-life features.
 
@@ -18,3 +18,7 @@ Notes:
 - Icons are placeholders; replace with real PNGs.
 - Background runs via MV2 background script.
 - Content scripts include basic URL guards only.
+
+Popup:
+
+- Toggle Focus Mode on/off from the extension popup. Changes apply live on contest pages; reload if needed.
