@@ -26,4 +26,5 @@ Popup:
 Features:
 
 - Focus Mode: hides standings and solved counts on contest/gym pages.
-- Submit Clipboard in C++: on problem pages, a sidebar button (between “Submit?” and “Last submissions”) reads your clipboard, opens a background submit tab, selects the most recent available C++ version, pastes your code, auto-submits, and then switches to My Submissions.
+- Submit Clipboard in C++: on problem pages, a sidebar button (between “Submit?” and “Last submissions”) reads your clipboard, opens a background submit tab, selects the most recent available C++ version, pastes your code, auto-submits silently, waits for the submissions page to load, then reloads the problem page and closes the submit tab.
+- Instant Problem Navigation: on contest/gym problem pages, use ArrowLeft/ArrowRight for seamless navigation between problems. Toggle in the popup.

@@ -149,4 +149,11 @@
     cfxDebounce = setTimeout(() => { try { insertButton(); } catch (_) {} }, 150);
   });
   cfxObserver.observe(document.documentElement, { childList: true, subtree: true });
+  // Re-run placement after problem swaps triggered by navigation content script
+  try {
+    document.addEventListener('cfx-problem-swapped', () => {
+      try { cfxPlaceStable = false; } catch (_) {}
+      try { insertButton(); } catch (_) {}
+    });
+  } catch (_) {}
 })();

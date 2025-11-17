@@ -21,6 +21,7 @@
     "storage",
     "clipboardRead",
     "tabs",
+    "tabHide",
     "https://codeforces.com/*",
     "https://*.codeforces.com/*"
   ],
@@ -36,6 +37,16 @@
       ],
       "js": ["src/content/global.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/contest/*/problem/*",
+        "https://*.codeforces.com/contest/*/problem/*",
+        "https://codeforces.com/gym/*/problem/*",
+        "https://*.codeforces.com/gym/*/problem/*"
+      ],
+      "js": ["src/content/navigation.js"],
+      "run_at": "document_end"
     },
     {
       "matches": [
