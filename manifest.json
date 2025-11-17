@@ -77,6 +77,28 @@
       ],
       "js": ["src/content/standings.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/contest/*/submission/*",
+        "https://*.codeforces.com/contest/*/submission/*",
+        "https://codeforces.com/problemset/submission/*/*",
+        "https://*.codeforces.com/problemset/submission/*/*",
+        "https://codeforces.com/gym/*/submission/*",
+        "https://*.codeforces.com/gym/*/submission/*",
+        "https://codeforces.com/contest/*/my",
+        "https://*.codeforces.com/contest/*/my",
+        "https://codeforces.com/gym/*/my",
+        "https://*.codeforces.com/gym/*/my",
+        "https://codeforces.com/contest/*/problem/*",
+        "https://*.codeforces.com/contest/*/problem/*",
+        "https://codeforces.com/gym/*/problem/*",
+        "https://*.codeforces.com/gym/*/problem/*",
+        "https://codeforces.com/problemset/status*",
+        "https://*.codeforces.com/problemset/status*"
+      ],
+      "js": ["src/content/submission.js"],
+      "run_at": "document_start"
     }
   ]
 }
