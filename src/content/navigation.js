@@ -488,7 +488,7 @@
     }
   };
 
-  const PREFETCH_DELAY_MS = 1400;
+  const PREFETCH_DELAY_MS = 0;
   let prefetchTimer = null;
   const prefetchNeighbors = () => {
     if (prefetchTimer) { clearTimeout(prefetchTimer); prefetchTimer = null; }
