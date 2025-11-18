@@ -99,6 +99,16 @@
       ],
       "js": ["src/content/submission.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["https://codeforces.com/gyms"],
+      "js": [
+        "src/shared/sha512.js",
+        "src/shared/cf-api.js",
+        "src/shared/storage.js",
+        "src/content/gym-page.js"
+      ],
+      "run_at": "document_idle"
     }
   ]
 }

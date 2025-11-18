@@ -1,4 +1,4 @@
-export const storage = {
+window.storage = {
   async get(keys) {
     return await chrome.storage.local.get(keys);
   },
