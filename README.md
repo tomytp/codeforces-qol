@@ -1,30 +1,72 @@
 # Codeforces QoL
 
-Minimal Firefox WebExtension (MV2) skeleton for Codeforces quality-of-life features.
+Quality-of-life enhancements for Codeforces. A Firefox WebExtension (MV2).
 
-Load temporarily in Firefox: open about:debugging > This Firefox > Load Temporary Add-on… and select manifest.json. MV2 is used for compatibility with temporary installs.
+## Installation
 
-Structure:
+1. Open Firefox and navigate to `about:debugging`
+2. Click "This Firefox" → "Load Temporary Add-on..."
+3. Select `manifest.json` from this repository
 
-- manifest.json
-- src/background/background.js
-- src/content/{global,contest,submit,standings}.js
-- src/ui/{popup.{html,js,css}, options.{html,js,css}}
-- src/shared/{storage.js, dom-utils.js}
-- assets/icon-16.png, icon-32.png, icon-48.png, icon-128.png
+## Features
 
-Notes:
+### Focus Mode
+Hides standings and solve counts on contest pages to avoid distraction. Toggle from the popup or options page. Changes apply live.
+
+### Submit Clipboard in C++
+On problem pages, a sidebar button lets you:
+1. Read C++ code from clipboard
+2. Automatically open submit form
+3. Select the latest C++ compiler
+4. Paste and auto-submit your code
+
+### Instant Problem Navigation
+Use **ArrowLeft/ArrowRight** to switch between problems instantly without page reload. Works on contest and gym problem pages.
+
+### Hide Test Case Info
+Hides "on test X" from verdict messages for an ICPC-style experience. Toggle from popup/options.
+
+### Friend Gym Finder
+On the `/gyms` page, find 5-hour gyms from the last 8 years where your friends have virtual submissions but you don't. Requires API key setup in options.
+
+## Structure
+
+```
+manifest.json
+src/
+  background/background.js     ← Background script
+  content/
+    global.js                  ← Submit Clipboard button
+    contest.js                 ← Focus Mode
+    submit.js                  ← Submit form auto-fill
+    submission.js              ← Hide Test Case Info
+    navigation.js              ← Instant Navigation
+    gym-page.js                ← Friend Gym Finder
+  ui/
+    popup.{html,js,css}        ← Extension popup
+    options.{html,js,css}      ← Options page
+  shared/
+    storage.js                 ← Cross-browser storage
+    cf-api.js                  ← Codeforces API wrapper
+    sha512.js                  ← SHA-512 for API auth
+assets/
+  icon-{16,32,48,128}.png      ← Extension icons
+```
+
+## Configuration
+
+### Popup Toggles
+- **Focus Mode** – Hide standings/solve counts
+- **Instant Problem Navigation** – Arrow key navigation
+- **Hide Test Case Info** – ICPC-style verdicts
+
+### Options Page
+All popup toggles plus API credentials for Friend Gym Finder:
+- **Codeforces Handle** – Your username
+- **API Key / Secret** – From [codeforces.com/settings/api](https://codeforces.com/settings/api)
+
+## Notes
 
 - Icons are placeholders; replace with real PNGs.
-- Background runs via MV2 background script.
-- Content scripts include basic URL guards only.
-
-Popup:
-
-- Toggle Focus Mode on/off from the extension popup. Changes apply live on contest pages; reload if needed.
-
-Features:
-
-- Focus Mode: hides standings and solved counts on contest/gym pages.
-- Submit Clipboard in C++: on problem pages, a sidebar button (between “Submit?” and “Last submissions”) reads your clipboard, opens a background submit tab, selects the most recent available C++ version, pastes your code, auto-submits silently, waits for the submissions page to load, then reloads the problem page and closes the submit tab.
-- Instant Problem Navigation: on contest/gym problem pages, use ArrowLeft/ArrowRight for seamless navigation between problems. Toggle in the popup.
+- Uses MV2 for Firefox temporary install compatibility.
+- Content scripts run at `document_start` to prevent UI flashes.

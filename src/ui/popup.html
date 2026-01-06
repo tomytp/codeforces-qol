@@ -1,29 +1,86 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Codeforces QoL</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <main>
-      <h1>Codeforces QoL</h1>
-      <label class="row">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Codeforces QoL</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+  <main>
+    <header>
+      <div class="logo-title">
+        <img src="../../assets/icon-48.png" alt="Logo" width="32" height="32" />
+        <h1>Codeforces QoL</h1>
+      </div>
+    </header>
+
+    <section class="toggles">
+      <label class="toggle">
         <input type="checkbox" id="focusMode" />
-        <span>Focus Mode</span>
+        <span class="toggle-slider"></span>
+        <div class="toggle-text">
+          <span class="label">Focus Mode</span>
+          <span class="hint">Hide standings & solve counts</span>
+        </div>
       </label>
-      <p class="hint">Hides standings and solve counts on contest pages. Reload the page to apply.</p>
-      <label class="row">
+
+      <label class="toggle">
         <input type="checkbox" id="instantNav" />
-        <span>Instant Problem Navigation</span>
+        <span class="toggle-slider"></span>
+        <div class="toggle-text">
+          <span class="label">Instant Navigation</span>
+          <span class="hint">Arrow keys to switch problems</span>
+        </div>
       </label>
-      <p class="hint">Use ArrowLeft/ArrowRight to switch problems instantly.</p>
-      <label class="row">
+
+      <label class="toggle">
         <input type="checkbox" id="hideTestCaseInfo" />
-        <span>Hide Test Case Info</span>
+        <span class="toggle-slider"></span>
+        <div class="toggle-text">
+          <span class="label">Hide Test Info</span>
+          <span class="hint">ICPC-style verdicts</span>
+        </div>
       </label>
-      <p class="hint">Hides the test case number on failed submissions (ICPC style).</p>
-    </main>
-    <script src="popup.js"></script>
-  </body>
-  </html>
+    </section>
+
+    <section class="api-section">
+      <h2>🔍 Gym Finder API</h2>
+      <p class="section-hint">Required for Friend Gym Finder. <a href="https://codeforces.com/settings/api"
+          target="_blank">Get API key →</a></p>
+
+      <div class="input-group">
+        <label for="handle">Handle</label>
+        <div class="input-row">
+          <input type="text" id="handle" placeholder="Your Codeforces handle" />
+          <button id="detectHandle" title="Auto-detect from Codeforces">🔄</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="apiKey">API Key</label>
+        <input type="text" id="apiKey" placeholder="Your API key" />
+      </div>
+
+      <div class="input-group">
+        <label for="apiSecret">API Secret</label>
+        <input type="password" id="apiSecret" placeholder="Your API secret" />
+      </div>
+
+      <div class="button-row">
+        <button id="saveApi" class="primary">Save Settings</button>
+        <span id="saveStatus"></span>
+      </div>
+    </section>
+
+    <footer>
+      <a href="https://codeforces.com/settings/api" target="_blank">API Settings</a>
+      <span>•</span>
+      <span class="version">v0.1.0</span>
+    </footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+
+</html>

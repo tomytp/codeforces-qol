@@ -4,15 +4,27 @@
 
 This repository is a Firefox WebExtension (Codeforces QoL). Keep source in `src/` and static assets in `assets/`.
 
-Example layout:
-
+```
 manifest.json
 src/
   background/background.js
-  content/global.js, contest.js, submit.js, standings.js
-  ui/popup.{html,js,css}, options.{html,js,css}
-  shared/storage.js, dom-utils.js
-assets/icon-16.png, icon-32.png, icon-48.png, icon-128.png
+  content/
+    global.js         ← Submit Clipboard button
+    contest.js        ← Focus Mode
+    submit.js         ← Auto-fill submit form
+    submission.js     ← Hide Test Case Info
+    navigation.js     ← Instant Problem Navigation
+    gym-page.js       ← Friend Gym Finder
+  ui/
+    popup.{html,js,css}
+    options.{html,js,css}
+  shared/
+    storage.js        ← Cross-browser storage utilities
+    cf-api.js         ← Codeforces API wrapper
+    sha512.js         ← SHA-512 for API signatures
+assets/
+  icon-16.png, icon-32.png, icon-48.png, icon-128.png
+```
 
 ## Build, Test, and Development Commands
 
@@ -28,16 +40,16 @@ If `web-ext` is not installed, add it to devDependencies and wire scripts accord
 ## Coding Style & Naming Conventions
 
 - Indentation: 2 spaces; UTF-8; LF line endings.
-- JavaScript: ES2020+, modules preferred. Use `const`/`let`, strict equality.
-- Naming: camelCase variables/functions, PascalCase classes, kebab-case filenames (e.g., `dom-utils.js`).
-- Imports: prefer relative within `src/`.
+- JavaScript: ES2020+, IIFEs preferred for content scripts. Use `const`/`let`, strict equality.
+- Naming: camelCase variables/functions, PascalCase classes, kebab-case filenames.
+- Imports: use `window.cfxStorage` or `window.storage` from shared module (no ES modules in MV2).
 - Lint/format: ESLint + Prettier; run `npm run lint` before pushing.
 
 ## Testing Guidelines
 
 - Framework: Vitest or Jest.
 - Location: `tests/` or colocated `__tests__/` near modules.
-- Names: `*.test.js` (e.g., `dom-utils.test.js`).
+- Names: `*.test.js` (e.g., `storage.test.js`).
 - Coverage: target >=80% on `src/shared`; use DOM mocks for content scripts.
 - Run: `npm test` locally and in CI.
 
@@ -49,12 +61,17 @@ If `web-ext` is not installed, add it to devDependencies and wire scripts accord
 
 ## Security & Configuration Tips
 
-- Minimize `manifest.json` permissions; avoid `all_urls` unless essential. Current perms: `storage`, `clipboardRead`, `tabs`, and Codeforces host patterns.
+- Minimize `manifest.json` permissions; avoid `all_urls` unless essential. Current perms: `storage`, `clipboardRead`, `tabs`, `tabHide`, and Codeforces host patterns.
 - Bundle all scripts; do not load remote code. Use `chrome.storage.local` for options.
 - Guard content scripts: run only on Codeforces URLs; run at `document_start` to prevent UI flashes.
-- Manifest uses MV2 (`background.scripts`) for temporary install compatibility. If migrating to MV3, switch to `background.service_worker` and enable Firefox MV3 flags.
+- Manifest uses MV2 (`background.scripts`) for temporary install compatibility.
 
-## Current Features (Overview)
+## Current Features
 
-- Focus Mode: Hides standings and solved counts on contest/gym pages; includes early CSS pre-hide to avoid flashes; live toggle via popup/options.
-- Submit Clipboard in C++: Sidebar button (between “Submit?” and “Last submissions”) reads clipboard, opens a background submit tab, selects latest C++ (e.g., 23/20/17…), pastes code, auto-submits, then switches to “My submissions.” Includes single-flight lock and throttled observers.
+| Feature | Description | Files |
+|---------|-------------|-------|
+| **Focus Mode** | Hides standings and solved counts on contest/gym pages | `contest.js` |
+| **Submit Clipboard in C++** | Button to auto-submit clipboard code with latest C++ | `global.js`, `submit.js`, `background.js` |
+| **Instant Problem Navigation** | ArrowLeft/ArrowRight to switch problems seamlessly | `navigation.js` |
+| **Hide Test Case Info** | Hides "on test X" from verdict (ICPC style) | `submission.js` |
+| **Friend Gym Finder** | Finds gyms where friends have virtual submissions | `gym-page.js`, `cf-api.js` |

@@ -1,159 +1,202 @@
+/**
+ * Codeforces QoL - Submit Content Script
+ * Auto-fills and submits code from clipboard when triggered by background script.
+ */
 (() => {
-  const isSubmitPage = () => /\/(problemset|contest|gym)\/.*submit/.test(location.pathname);
-  if (!isSubmitPage()) return;
+  'use strict';
 
-  const log = (...args) => console.log('[CFX] SubmitPrefill:', ...args);
-  let cfxNotifiedSubmit = false;
+  if (!/\/(problemset|contest|gym)\/.*submit/.test(location.pathname)) return;
 
-  const getStorage = (keys, cb) => {
-    try {
-      if (typeof browser !== 'undefined' && browser.storage && browser.storage.local) {
-        browser.storage.local.get(keys).then(cb).catch((e) => console.error(e));
-      } else {
-        chrome.storage.local.get(keys, cb);
-      }
-    } catch (e) { console.error(e); }
+  const LOG_PREFIX = '[CFX] Submit:';
+  const log = (...args) => console.log(LOG_PREFIX, ...args);
+
+  // Use shared storage utilities (injected via manifest)
+  const storage = window.cfxStorage || {
+    get: (keys) => new Promise((resolve) => chrome.storage.local.get(keys, resolve)),
+    set: (obj) => new Promise((resolve) => chrome.storage.local.set(obj, resolve))
   };
 
-  const setStorage = (obj, cb) => {
-    try {
-      if (typeof browser !== 'undefined' && browser.storage && browser.storage.local) {
-        browser.storage.local.set(obj).then(() => cb && cb()).catch((e) => console.error(e));
-      } else {
-        chrome.storage.local.set(obj, cb);
-      }
-    } catch (e) { console.error(e); }
-  };
+  let hasNotifiedSubmit = false;
 
-  const findLangSelect = (root = document) => root.querySelector('#programTypeId, select[name="programTypeId"]');
-  const findSourceArea = (root = document) => root.querySelector('#sourceCodeTextarea, textarea[name="source"]');
-  const findProblemIndexSelect = (root = document) => root.querySelector('select[name="submittedProblemIndex"], #submittedProblemIndex');
-  const findProblemsetCodeInput = (root = document) => root.querySelector('input[name="submittedProblemCode"], #submittedProblemCode');
+  // DOM element finders
+  const findLangSelect = () => document.querySelector('#programTypeId, select[name="programTypeId"]');
+  const findSourceArea = () => document.querySelector('#sourceCodeTextarea, textarea[name="source"]');
+  const findProblemIndexSelect = () => document.querySelector('select[name="submittedProblemIndex"], #submittedProblemIndex');
+  const findProblemCodeInput = () => document.querySelector('input[name="submittedProblemCode"], #submittedProblemCode');
 
-  const chooseCppOption = (sel) => {
-    if (!sel) return false;
-    const opts = Array.from(sel.options);
+  /**
+   * Select the most recent C++ compiler option
+   */
+  const selectCppOption = (select) => {
+    if (!select) return false;
+
+    const opts = Array.from(select.options);
     let best = null;
     let bestVersion = -1;
-    for (const o of opts) {
-      const text = (o.textContent || '').toLowerCase();
+
+    for (const opt of opts) {
+      const text = (opt.textContent || '').toLowerCase();
       if (!/c\+\+|g\+\+/.test(text)) continue;
-      const m = text.match(/(?:c\+\+|g\+\+)\s*(\d{2})/);
-      const ver = m ? parseInt(m[1], 10) : 0;
+
+      const match = text.match(/(?:c\+\+|g\+\+)\s*(\d{2})/);
+      const ver = match ? parseInt(match[1], 10) : 0;
+
       if (ver > bestVersion) {
         bestVersion = ver;
-        best = o;
+        best = opt;
       }
     }
+
+    // Fallback to any C++ option
     if (!best) {
-      best = opts.find((o) => /(c\+\+|g\+\+)/i.test(o.textContent || '')) || null;
+      best = opts.find((o) => /(c\+\+|g\+\+)/i.test(o.textContent || ''));
     }
+
     if (!best) return false;
-    sel.value = best.value;
-    sel.dispatchEvent(new Event('change', { bubbles: true }));
+
+    select.value = best.value;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
     return true;
   };
 
+  /**
+   * Find the submit form
+   */
   const findSubmitForm = () => {
-    const lang = findLangSelect();
-    const area = findSourceArea();
-    const probSel = findProblemIndexSelect();
-    const probCode = findProblemsetCodeInput();
-    const candidates = [
-      lang && lang.closest('form'),
-      area && area.closest('form'),
-      probSel && probSel.closest('form'),
-      probCode && probCode.closest('form'),
-      document.querySelector('form[action*="/submit"]')
+    const elements = [
+      findLangSelect(),
+      findSourceArea(),
+      findProblemIndexSelect(),
+      findProblemCodeInput()
     ].filter(Boolean);
-    for (const f of candidates) {
-      if (f.querySelector('#programTypeId, [name="programTypeId"], #sourceCodeTextarea, textarea[name="source"], [name="submittedProblemIndex"], #submittedProblemIndex, #submittedProblemCode, [name="submittedProblemCode"]')) {
-        return f;
-      }
+
+    for (const el of elements) {
+      const form = el.closest('form');
+      if (form) return form;
     }
-    return null;
+
+    return document.querySelector('form[action*="/submit"]');
   };
 
-  const apply = (payload) => {
+  /**
+   * Apply payload to form
+   */
+  const applyPayload = async (payload) => {
     const { code, problemIndex, problemId, autoSubmit } = payload || {};
-    const lang = findLangSelect();
-    const area = findSourceArea();
-    if (lang) chooseCppOption(lang);
-    if (area && typeof code === 'string') {
-      area.value = code;
-      area.dispatchEvent(new Event('input', { bubbles: true }));
-      area.dispatchEvent(new Event('change', { bubbles: true }));
-      area.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+
+    // Select C++ compiler
+    const langSelect = findLangSelect();
+    if (langSelect) selectCppOption(langSelect);
+
+    // Fill source code
+    const sourceArea = findSourceArea();
+    if (sourceArea && typeof code === 'string') {
+      sourceArea.value = code;
+      sourceArea.dispatchEvent(new Event('input', { bubbles: true }));
+      sourceArea.dispatchEvent(new Event('change', { bubbles: true }));
+      sourceArea.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
     }
-    const probSel = findProblemIndexSelect();
-    if (probSel && problemIndex) {
-      const opt = Array.from(probSel.options).find(
+
+    // Select problem
+    const probSelect = findProblemIndexSelect();
+    if (probSelect && problemIndex) {
+      const opt = Array.from(probSelect.options).find(
         (o) => (o.value || '').toUpperCase() === String(problemIndex).toUpperCase()
       );
       if (opt) {
-        probSel.value = opt.value;
-        probSel.dispatchEvent(new Event('change', { bubbles: true }));
+        probSelect.value = opt.value;
+        probSelect.dispatchEvent(new Event('change', { bubbles: true }));
       }
     } else {
-      const probCode = findProblemsetCodeInput();
+      const probCode = findProblemCodeInput();
       if (probCode && problemId && problemIndex) {
-        probCode.value = `${String(problemId)}${String(problemIndex).toUpperCase()}`;
+        probCode.value = `${problemId}${String(problemIndex).toUpperCase()}`;
         probCode.dispatchEvent(new Event('input', { bubbles: true }));
         probCode.dispatchEvent(new Event('change', { bubbles: true }));
       }
     }
+
+    // Auto-submit if requested
     if (autoSubmit) {
-      let attempts = 0;
-      const maxAttempts = 75; // up to ~6s
-      const tick = () => {
-        attempts++;
-        const form = findSubmitForm();
-        const submitBtn = form && form.querySelector('button[type="submit"], input[type="submit"]');
-        const langNow = findLangSelect();
-        const langOk = !!(langNow && langNow.value);
-        const areaNow = findSourceArea();
-        const codeOk = !!(areaNow && areaNow.value && areaNow.value.length > 0);
-        const selNow = findProblemIndexSelect();
-        const codeInput = findProblemsetCodeInput();
-        const probOk = !!((selNow && selNow.value) || (codeInput && codeInput.value));
-        if (form && langOk && codeOk && probOk) {
-          if (!cfxNotifiedSubmit) {
-            try {
-              const path = location.pathname;
-              let myUrl = 'https://codeforces.com/problemset/status?my=on';
-              const m1 = path.match(/\/contest\/(\d+)\/submit/);
-              const m2 = path.match(/\/gym\/(\d+)\/submit/);
-              if (m1) myUrl = `https://codeforces.com/contest/${m1[1]}/my`;
-              else if (m2) myUrl = `https://codeforces.com/gym/${m2[1]}/my`;
-              chrome.runtime.sendMessage({ type: 'CFX_SUBMITTED', myUrl });
-            } catch (e) {}
-            cfxNotifiedSubmit = true;
-          }
-          // Clear payload then submit
-          setStorage({ cfx_submit_payload: null }, () => {
-            if (submitBtn) submitBtn.click();
-            else form.submit();
-          });
-          return;
-        }
-        if (attempts < maxAttempts) setTimeout(tick, 80);
-        else setStorage({ cfx_submit_payload: null });
-      };
-      setTimeout(tick, 50);
+      await waitAndSubmit();
     }
   };
 
-  const tryApply = () => {
-    getStorage(['cfx_submit_payload'], (res) => {
-      const payload = res && res.cfx_submit_payload;
-      if (!payload) return;
-      apply(payload);
-      log('applied payload');
+  /**
+   * Wait for form to be ready, then submit
+   */
+  const waitAndSubmit = () => {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 75; // ~6s
+
+      const tick = async () => {
+        attempts++;
+
+        const form = findSubmitForm();
+        const submitBtn = form?.querySelector('button[type="submit"], input[type="submit"]');
+        const langOk = Boolean(findLangSelect()?.value);
+        const codeOk = Boolean(findSourceArea()?.value?.length > 0);
+        const probSelect = findProblemIndexSelect();
+        const probCode = findProblemCodeInput();
+        const probOk = Boolean(probSelect?.value || probCode?.value);
+
+        if (form && langOk && codeOk && probOk) {
+          // Notify background script of submission
+          if (!hasNotifiedSubmit) {
+            const path = location.pathname;
+            let myUrl = 'https://codeforces.com/problemset/status?my=on';
+
+            const m1 = path.match(/\/contest\/(\d+)\/submit/);
+            const m2 = path.match(/\/gym\/(\d+)\/submit/);
+
+            if (m1) myUrl = `https://codeforces.com/contest/${m1[1]}/my`;
+            else if (m2) myUrl = `https://codeforces.com/gym/${m2[1]}/my`;
+
+            chrome.runtime.sendMessage({ type: 'CFX_SUBMITTED', myUrl });
+            hasNotifiedSubmit = true;
+          }
+
+          // Clear payload and submit
+          await storage.set({ cfx_submit_payload: null });
+          submitBtn ? submitBtn.click() : form.submit();
+          resolve();
+          return;
+        }
+
+        if (attempts < maxAttempts) {
+          setTimeout(tick, 80);
+        } else {
+          await storage.set({ cfx_submit_payload: null });
+          resolve();
+        }
+      };
+
+      setTimeout(tick, 50);
     });
   };
 
-  const mo = new MutationObserver(tryApply);
-  mo.observe(document.documentElement, { childList: true, subtree: true });
+  /**
+   * Try to apply stored payload
+   */
+  const tryApply = async () => {
+    try {
+      const res = await storage.get(['cfx_submit_payload']);
+      const payload = res?.cfx_submit_payload;
+      if (!payload) return;
+
+      log('Applying payload');
+      await applyPayload(payload);
+    } catch (err) {
+      console.error(LOG_PREFIX, 'Error:', err);
+    }
+  };
+
+  // Watch for DOM changes and try to apply payload
+  const observer = new MutationObserver(tryApply);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  // Try to apply on load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', tryApply);
   } else {

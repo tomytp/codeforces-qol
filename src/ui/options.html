@@ -8,21 +8,32 @@
   <body>
     <main>
       <h1>Codeforces QoL – Options</h1>
+      
       <section>
+        <h2>Feature Toggles</h2>
         <label>
           <input type="checkbox" id="focusMode" />
           Enable Focus Mode
         </label>
-      </section>
-      <section>
+        <p class="hint">Hides standings and solve counts on contest pages.</p>
+        
         <label>
           <input type="checkbox" id="instantNav" />
-          Enable Instant Problem Navigation (arrow keys)
+          Enable Instant Problem Navigation
         </label>
+        <p class="hint">Use ArrowLeft/ArrowRight to switch between problems.</p>
+        
+        <label>
+          <input type="checkbox" id="hideTestCaseInfo" />
+          Hide Test Case Info
+        </label>
+        <p class="hint">Hides "on test X" from verdict messages (ICPC style).</p>
       </section>
+
       <hr/>
+
       <section class="api-settings">
-        <h2>Gym Finder</h2>
+        <h2>Friend Gym Finder</h2>
         <p class="hint">Requires a Codeforces API key to find friends' submissions. Create one <a href="https://codeforces.com/settings/api" target="_blank">here</a>.</p>
         <label>
           <span>Codeforces Handle</span>
@@ -30,11 +41,11 @@
         </label>
         <label>
           <span>API Key</span>
-          <input type="text" id="apiKey" placeholder="e.g., 1234567890abcdef1234567890abcdef12345678" />
+          <input type="text" id="apiKey" placeholder="e.g., 1234567890abcdef..." />
         </label>
         <label>
           <span>API Secret</span>
-          <input type="password" id="apiSecret" placeholder="e.g., 1234567890abcdef1234567890abcdef12345678" />
+          <input type="password" id="apiSecret" placeholder="e.g., 1234567890abcdef..." />
         </label>
         <button id="saveApi">Save</button>
         <span id="saveStatus"></span>
@@ -42,4 +53,4 @@
     </main>
     <script src="options.js"></script>
   </body>
-  </html>
+</html>
