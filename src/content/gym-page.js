@@ -149,10 +149,12 @@
     const datatableWrapper = document.createElement('div');
     datatableWrapper.className = 'datatable';
     datatableWrapper.style.marginTop = '2em';
+    datatableWrapper.style.backgroundColor = '#E1E1E1';
+    datatableWrapper.style.paddingBottom = '3px';
     datatableWrapper.innerHTML = `
       <div class="lt">&nbsp;</div><div class="rt">&nbsp;</div><div class="lb">&nbsp;</div><div class="rb">&nbsp;</div>
       <div style="padding: 4px 0 0 6px;font-size:1.4rem;position:relative;">Recommended Gyms</div>
-      <div style="background-color: white; margin: 0.3em 3px 0px; position: relative;">
+      <div style="background-color: white; margin: 0.3em 3px 0 3px; position: relative;">
         <div class="ilt">&nbsp;</div>
         <div class="irt">&nbsp;</div>
         <table>

@@ -1,8 +1,14 @@
 {
   "manifest_version": 2,
   "name": "Codeforces QoL",
-  "version": "0.1.0",
-  "description": "Quality-of-life enhancements for Codeforces.",
+  "version": "1.0.0",
+  "description": "Quality-of-life enhancements for Codeforces: Focus Mode, instant problem navigation, clipboard submit, hide test info, and gym finder.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "codeforces-qol@extension.local",
+      "strict_min_version": "57.0"
+    }
+  },
   "icons": {
     "16": "assets/icon-16.png",
     "32": "assets/icon-32.png",
@@ -21,12 +27,13 @@
     "storage",
     "clipboardRead",
     "tabs",
-    "tabHide",
     "https://codeforces.com/*",
     "https://*.codeforces.com/*"
   ],
   "background": {
-    "scripts": ["src/background/background.js"],
+    "scripts": [
+      "src/background/background.js"
+    ],
     "persistent": false
   },
   "content_scripts": [
@@ -35,7 +42,10 @@
         "https://codeforces.com/*",
         "https://*.codeforces.com/*"
       ],
-      "js": ["src/shared/storage.js", "src/content/global.js"],
+      "js": [
+        "src/shared/storage.js",
+        "src/content/global.js"
+      ],
       "run_at": "document_start"
     },
     {
@@ -45,7 +55,10 @@
         "https://codeforces.com/gym/*/problem/*",
         "https://*.codeforces.com/gym/*/problem/*"
       ],
-      "js": ["src/shared/storage.js", "src/content/navigation.js"],
+      "js": [
+        "src/shared/storage.js",
+        "src/content/navigation.js"
+      ],
       "run_at": "document_end"
     },
     {
@@ -55,7 +68,10 @@
         "https://codeforces.com/gym/*",
         "https://*.codeforces.com/gym/*"
       ],
-      "js": ["src/shared/storage.js", "src/content/contest.js"],
+      "js": [
+        "src/shared/storage.js",
+        "src/content/contest.js"
+      ],
       "run_at": "document_start"
     },
     {
@@ -67,7 +83,10 @@
         "https://codeforces.com/gym/*/submit*",
         "https://*.codeforces.com/gym/*/submit*"
       ],
-      "js": ["src/shared/storage.js", "src/content/submit.js"],
+      "js": [
+        "src/shared/storage.js",
+        "src/content/submit.js"
+      ],
       "run_at": "document_start"
     },
     {
@@ -89,11 +108,16 @@
         "https://codeforces.com/problemset/status*",
         "https://*.codeforces.com/problemset/status*"
       ],
-      "js": ["src/shared/storage.js", "src/content/submission.js"],
+      "js": [
+        "src/shared/storage.js",
+        "src/content/submission.js"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["https://codeforces.com/gyms"],
+      "matches": [
+        "https://codeforces.com/gyms"
+      ],
       "js": [
         "src/shared/sha512.js",
         "src/shared/cf-api.js",

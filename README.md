@@ -1,9 +1,13 @@
 # Codeforces QoL
 
-Quality-of-life enhancements for Codeforces. A Firefox WebExtension (MV2).
+Quality-of-life enhancements for Codeforces. A Firefox WebExtension.
 
 ## Installation
 
+### Firefox Add-ons (Recommended)
+Install from [Firefox Add-ons](#) *(link coming soon)*
+
+### Manual Installation (Development)
 1. Open Firefox and navigate to `about:debugging`
 2. Click "This Firefox" → "Load Temporary Add-on..."
 3. Select `manifest.json` from this repository
@@ -67,6 +71,5 @@ All popup toggles plus API credentials for Friend Gym Finder:
 
 ## Notes
 
-- Icons are placeholders; replace with real PNGs.
-- Uses MV2 for Firefox temporary install compatibility.
+- Uses Manifest V2 for Firefox compatibility.
 - Content scripts run at `document_start` to prevent UI flashes.
