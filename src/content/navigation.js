@@ -278,11 +278,10 @@
     const stmt = statements.get(idx);
     if (!stmt) return null;
 
-    const tpl = document.createElement('template');
-    tpl.innerHTML = stmt.html.trim();
-    let node = tpl.content.querySelector('.problemindexholder')
-      || tpl.content.querySelector('.problem-statement');
-    return node ? node.cloneNode(true) : null;
+    const doc = new DOMParser().parseFromString(stmt.html.trim(), 'text/html');
+    let node = doc.querySelector('.problemindexholder')
+      || doc.querySelector('.problem-statement');
+    return node ? document.adoptNode(node.cloneNode(true)) : null;
   };
 
   /**
@@ -466,18 +465,17 @@
         // Validate render
         if (!validateRenderedIndex(idx) || !hasProblemContent()) {
           const data = await fetchProblemPage(url);
-          const tpl = document.createElement('template');
-          tpl.innerHTML = data.pageHtml.trim();
-          const nh = tpl.content.querySelector('.problemindexholder')
-            || tpl.content.querySelector('.problem-statement');
+          const fetchedDoc = new DOMParser().parseFromString(data.pageHtml.trim(), 'text/html');
+          const nh = fetchedDoc.querySelector('.problemindexholder')
+            || fetchedDoc.querySelector('.problem-statement');
           if (nh) {
             const ex = container.querySelector('.problemindexholder')
               || container.querySelector('.problem-statement');
-            if (!smoothReplace(ex, container, nh.cloneNode(true))) {
-              container.innerHTML = data.pageHtml;
+            if (!smoothReplace(ex, container, document.adoptNode(nh.cloneNode(true)))) {
+              container.replaceChildren(...Array.from(fetchedDoc.body.childNodes).map(n => document.adoptNode(n)));
             }
           } else {
-            container.innerHTML = data.pageHtml;
+            container.replaceChildren(...Array.from(fetchedDoc.body.childNodes).map(n => document.adoptNode(n)));
           }
           document.title = data.title;
         }
@@ -487,22 +485,21 @@
         const container = document.querySelector('#pageContent');
         if (!container) { location.href = url; return; }
 
-        const tpl = document.createElement('template');
-        tpl.innerHTML = data.pageHtml.trim();
-        const nh = tpl.content.querySelector('.problemindexholder')
-          || tpl.content.querySelector('.problem-statement');
+        const parsedDoc = new DOMParser().parseFromString(data.pageHtml.trim(), 'text/html');
+        const nh = parsedDoc.querySelector('.problemindexholder')
+          || parsedDoc.querySelector('.problem-statement');
 
         if (nh) {
           const ex = container.querySelector('.problemindexholder')
             || container.querySelector('.problem-statement');
-          const cloned = nh.cloneNode(true);
+          const cloned = document.adoptNode(nh.cloneNode(true));
           if (!smoothReplace(ex, container, cloned)) {
-            container.innerHTML = data.pageHtml;
+            container.replaceChildren(...Array.from(parsedDoc.body.childNodes).map(n => document.adoptNode(n)));
           } else {
             scheduleTypeset();
           }
         } else {
-          container.innerHTML = data.pageHtml;
+          container.replaceChildren(...Array.from(parsedDoc.body.childNodes).map(n => document.adoptNode(n)));
         }
 
         history.pushState({ cfx: 'problem-swap', url }, '', url);

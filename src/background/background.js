@@ -46,14 +46,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       chrome.tabs.create({ url: submitUrl, active: false }, (submitTab) => {
         if (!submitTab || !submitTab.id) return;
 
-        // Hide the tab in Firefox if supported (requires "tabHide" permission)
-        try {
-          if (chrome.tabs.hide) {
-            chrome.tabs.hide(submitTab.id);
-          } else if (typeof browser !== 'undefined' && browser.tabs && browser.tabs.hide) {
-            browser.tabs.hide(submitTab.id).catch(() => {});
-          }
-        } catch (_) {}
+        // Tab is already created with active: false
+        // Note: tabs.hide requires Firefox 61+ and tabHide permission, removed for compatibility
 
         // Track when the submit tab reaches the status/my page and fully loads
         let reachedMyUrl = false;
@@ -68,9 +62,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             if (reachedMyUrl || isMyUrl(currentUrl)) {
               chrome.tabs.onUpdated.removeListener(listener);
               if (originTabId) {
-                try { chrome.tabs.reload(originTabId); } catch (_) {}
+                try { chrome.tabs.reload(originTabId); } catch (_) { }
               }
-              try { chrome.tabs.remove(submitTab.id); } catch (_) {}
+              try { chrome.tabs.remove(submitTab.id); } catch (_) { }
               chrome.storage.local.remove('cfx_submit_inflight');
             }
           }
@@ -83,7 +77,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             const i2 = r2 && r2.cfx_submit_inflight;
             if (i2 && i2.expiresAt && i2.expiresAt <= Date.now()) {
               chrome.storage.local.remove('cfx_submit_inflight');
-              try { chrome.tabs.remove(submitTab.id); } catch (_) {}
+              try { chrome.tabs.remove(submitTab.id); } catch (_) { }
             }
           });
         }, 46000);

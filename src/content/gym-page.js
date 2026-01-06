@@ -173,17 +173,43 @@
     const tbody = datatableWrapper.querySelector('tbody');
     resultsArray.forEach(({ gym, score }, index) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="left">
-          ${gym.name}<br>
-          <a style="font-size: 0.8em;" href="/gym/${gym.id}">Enter »</a><br>
-          <a style="font-size: 0.8em;" href="/gym/${gym.id}/virtual">Virtual participation »</a>
-        </td>
-        <td class="state">
-          <div><a href="/gym/${gym.id}/standings">Final standings</a></div>
-        </td>
-        <td class="right" style="font-size:1.2em; font-weight: bold;">${score}</td>
-      `;
+
+      // Name cell
+      const tdName = document.createElement('td');
+      tdName.className = 'left';
+      tdName.appendChild(document.createTextNode(gym.name));
+      tdName.appendChild(document.createElement('br'));
+      const enterLink = document.createElement('a');
+      enterLink.style.fontSize = '0.8em';
+      enterLink.href = `/gym/${gym.id}`;
+      enterLink.textContent = 'Enter »';
+      tdName.appendChild(enterLink);
+      tdName.appendChild(document.createElement('br'));
+      const virtualLink = document.createElement('a');
+      virtualLink.style.fontSize = '0.8em';
+      virtualLink.href = `/gym/${gym.id}/virtual`;
+      virtualLink.textContent = 'Virtual participation »';
+      tdName.appendChild(virtualLink);
+      tr.appendChild(tdName);
+
+      // Status cell
+      const tdState = document.createElement('td');
+      tdState.className = 'state';
+      const stateDiv = document.createElement('div');
+      const standingsLink = document.createElement('a');
+      standingsLink.href = `/gym/${gym.id}/standings`;
+      standingsLink.textContent = 'Final standings';
+      stateDiv.appendChild(standingsLink);
+      tdState.appendChild(stateDiv);
+      tr.appendChild(tdState);
+
+      // Score cell
+      const tdScore = document.createElement('td');
+      tdScore.className = 'right';
+      tdScore.style.fontSize = '1.2em';
+      tdScore.style.fontWeight = 'bold';
+      tdScore.textContent = String(score);
+      tr.appendChild(tdScore);
 
       if (index % 2 === 0) {
         Array.from(tr.children).forEach((td) => td.classList.add('dark'));
